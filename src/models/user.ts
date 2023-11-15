@@ -1,3 +1,4 @@
+import express from "express";
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends Document {

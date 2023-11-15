@@ -1,37 +1,26 @@
 import express from "express";
-import http from "http";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import bodyParser from "body-parser";
-import compression from "compression";
 import mongoose from "mongoose";
-import router from "./router";
+import bodyParser from "body-parser";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    credentials: true,
-  })
-);
-
-app.use(compression());
-app.use(cookieParser());
 app.use(bodyParser.json());
+app.use("/api", userRoutes);
 
-const server = http.createServer(app);
+const DB_URI =
+  "mongodb+srv://vantuan25072001:vantuan25072001@cluster0.h6wi1mv.mongodb.net/?retryWrites=true&w=majority";
+mongoose.connect(DB_URI);
 
-server.listen(8000, () => {
-  console.log("Server running on http://localhost:8000/");
+mongoose.connection.on("connected", () => {
+  console.log("Connected to MongoDB");
 });
 
-const MONGO_URL =
-  "mongodb+srv://vantuan25072001:vantuan25072001@cluster0.779he7u.mongodb.net/?retryWrites=true&w=majority";
+mongoose.connection.on("error", (err) => {
+  console.error(`MongoDB connection error: ${err}`);
+});
 
-mongoose.Promise = Promise;
-
-mongoose.connect(MONGO_URL).then(() => console.log("Connect DB successfull!!"));
-
-mongoose.connection.on("error", (error: Error) => console.log(error));
-
-app.use("/", router());
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
